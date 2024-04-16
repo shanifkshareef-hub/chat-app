@@ -5,7 +5,7 @@
 
 </p>
 
-## About Bill Chat Application 🏓
+## About Chat Application 🏓
 
 A secure chat application featuring JWT authentication for user access control. Allows multiple users to exchange messages seamlessly within the platform.
 
