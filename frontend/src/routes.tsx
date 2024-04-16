@@ -5,12 +5,9 @@ import { isAuthenticated } from "@utils/helpers";
 import Main from "@layouts/Main";
 
 import Login from "@pages/Login";
-import Dashboard from "@pages/Dashboard";
 
-import Menu1 from "@components/Menu/Menu1";
-import Menu2 from "@components/Menu/Menu2";
-import NewForm from "@pages/Form";
-import Chat from "@pages/Chat/Chat";
+import Chat from "@pages/Chat";
+import Register from "@pages/Register";
 
 const Private = ({ element }: { element: JSX.Element }) => {
   return isAuthenticated() ? element : <Navigate to={"/login"} />;
@@ -22,6 +19,10 @@ const routes: RouteObject[] = [
     element: <Login />,
   },
   {
+    path: "/register",
+    element: <Register />,
+  },
+  {
     path: "app",
     element: <Private element={<Main />} />,
     children: [
@@ -31,14 +32,14 @@ const routes: RouteObject[] = [
       },
     ],
   },
-  {
-    path: "*",
-    element: isAuthenticated() ? (
-      <Navigate to={"/app/chat"} />
-    ) : (
-      <Navigate to={"/login"} />
-    ),
-  },
+  // {
+  //   path: "*",
+  //   element: isAuthenticated() ? (
+  //     <Navigate to={"/app/chat"} />
+  //   ) : (
+  //     <Navigate to={"/login"} />
+  //   ),
+  // },
 ];
 
 export default routes;

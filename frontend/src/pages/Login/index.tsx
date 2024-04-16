@@ -1,5 +1,5 @@
 import { Form } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Services from "@services/auth";
 import { LoginData } from "src/interfaces/common";
 
@@ -12,8 +12,12 @@ const Login = () => {
     const resp = await Services.login(values);
 
     if (resp && resp.status && resp.data) {
+      const res = await Services.getPk();
       localStorage.setItem("token", resp.data.token);
-      navigate("/app/chat");
+      if (res && res.status && res.data) {
+        localStorage.setItem("pk", res.data);
+        navigate("/app/chat", { replace: true });
+      }
     }
   };
 
@@ -69,6 +73,17 @@ const Login = () => {
               Sign in
             </button>
           </div>
+          <p className="text-sm mt-2">
+            Don't have an account ?{" "}
+            <span
+              onClick={() => {
+                navigate("/register");
+              }}
+              className="font-medium cursor-pointer text-indigo-600 hover:text-indigo-500 "
+            >
+              Register
+            </span>
+          </p>
         </Form>
       </div>
     </div>
