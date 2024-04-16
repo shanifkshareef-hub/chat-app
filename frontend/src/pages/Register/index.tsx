@@ -10,8 +10,6 @@ const Register = () => {
   const onFinish = async (
     values: RegisterData & { confirmPassword: string }
   ) => {
-    console.log(values);
-
     const { confirmPassword, ...rest } = values;
     const resp = await Services.register(rest);
 

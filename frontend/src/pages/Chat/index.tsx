@@ -16,10 +16,6 @@ const Chat = () => {
   let temp: Socket;
 
   useEffect(() => {
-    socket.on("chat message", (data) => {
-      console.log(data);
-    });
-
     socket.on("unauthorized", () => {
       clearToken();
       navigate("/login");

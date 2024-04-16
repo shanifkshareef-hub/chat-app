@@ -7,8 +7,6 @@ const Login = () => {
   let navigate = useNavigate();
 
   const onFinish = async (values: LoginData) => {
-    console.log(values);
-
     const resp = await Services.login(values);
 
     if (resp && resp.status && resp.data) {

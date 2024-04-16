@@ -10,7 +10,6 @@ const MessageList: React.FC<IMessages> = ({ socket }) => {
 
   useEffect(() => {
     socket.on("chat message", (data) => {
-      console.log(data);
       setMessageData((state) => [...state, data]);
     });
     return () => {
