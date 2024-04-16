@@ -8,7 +8,10 @@ import { Socket, connect } from "socket.io-client";
 const Chat = () => {
   const navigate = useNavigate();
   const socket = connect("http://localhost:8000", {
-    query: { token: localStorage.getItem("token") },
+    // query: { token: localStorage.getItem("token") },
+    extraHeaders: {
+      authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
   let temp: Socket;
 

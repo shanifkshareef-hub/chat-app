@@ -21,11 +21,9 @@ let app = express();
   });
 
   io.on("connection", (socket) => {
-    console.log("socket is ready for connection", socket.id);
+    const authToken = socket.handshake.headers.authorization;
 
-    const query = socket.handshake.query;
-
-    const payload = verifyToken(query.token as string);
+    const payload = verifyToken(authToken as string);
     if (!payload) {
       console.log("Invalid token");
       socket.emit("unauthorized");

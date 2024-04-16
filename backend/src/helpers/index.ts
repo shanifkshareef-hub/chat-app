@@ -55,10 +55,12 @@ function generateLoginToken(user: User): string {
 }
 
 export const verifyToken = (token: string) => {
+  const tok = token.split("Bearer ")[1];
+
   var key = config.keys.public.replace(/\\n/gm, "\n");
 
   try {
-    return jwt.verify(token, key) as TokenPayload;
+    return jwt.verify(tok, key) as TokenPayload;
   } catch (error) {
     return false;
   }
