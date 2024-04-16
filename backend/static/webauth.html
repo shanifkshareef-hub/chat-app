@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webauthn Demo</title>
+
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/es2018/index.umd.min.js"></script>
+  </head>
+  <body>
+    <img id="qr" />
+
+    <br /><!-- This is a sample file so it is fine to use br -->
+    <input type="text" id="email" />
+    <button onclick="register()">Register</button>
+    <button onclick="validate()">Authenticate</button>
+    <script>
+      async function generateQR() {
+        setInterval(() => {
+          var myHeaders = new Headers();
+          myHeaders.append(
+            "Authorization",
+            "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQyZjQ2NDQzLWY4YmMtNDhlMS1iM2QyLWY3MmE1N2UwZjViZCIsImVtYWlsIjoibmF2ZWVuQGRvdHdvcmxkLmluIiwiaWF0IjoxNjIzNzQ3MTE2LCJleHAiOjE2MjQwMDYzMTZ9.M6Ibf2QiLa9I7GEdkNSi2htdjFZCVJ4XljjQjX7CFKQ3zb_RGbDqc3QEwqZx7qk3-L37xV3T7i0WyUaIMB2ullewwsXeqDCZFWYMhv-45ppvNg88luy75Hs4qWjGYXbQy5SH15XUaZvKVY5R8sAiz18oyhgmX8EJruURZThZEbLgV-nrgpbS2ST8wuoXjVKX3re-cH0ZxSzNSTll1ZZrr0GMxnexiGjxzjs5--H07frxh2Mlf2EPD9v0hTfnfi8SEixjGv3-bzyG5VUw_Ukmcg-k1t6uD9_ysM3ltAr8YOLmwBx6h7H396xOuLQHDtNVb70aXG8mvBfd47RaVxXgWg"
+          );
+
+          var requestOptions = {
+            method: "GET",
+            headers: myHeaders,
+            redirect: "follow",
+          };
+
+          fetch(
+            "http://localhost:8000/api/v1/users/authenticator",
+            requestOptions
+          )
+            .then((response) => response.text())
+            .then((result) => (document.querySelector("#qr").src = result))
+            .catch((error) => console.log("error", error));
+        }, 5 * 60 * 10000);
+      }
+      generateQR();
+
+      async function register() {
+        const { startAttestation } = SimpleWebAuthnBrowser;
+        try {
+          var myHeaders = new Headers();
+          myHeaders.append(
+            "Authorization",
+            "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQwN2IwM2EzLTVkODUtNGZmZi1hYmY0LWE4YmMzMDNiOWFhNCIsImVtYWlsIjoibmF2ZWVuQGRvdHdvcmxkLmluIiwiaWF0IjoxNjIzNjMxNzY2LCJleHAiOjE2MjM4OTA5NjZ9.uipzZdna4OSHB-XeUizz2Kkc7ZT5ll5hVHZmCMaKinsYGJ1-h8mzAF2zjgQxRusT29QWw8PeLBw4b9RBULgJmPbD6IOpGHpRWXwrtXmxR8mS0h5JGcSMRj5PAqGK9x5LDVVjWG-uXCrlDkhrLbjjTcHmMwxHrYu9EuclPYrOGaPfSVC_NH0fYh75eD9AIBwQY-jX23Dkyv67nJn_wR5P5gPrufwavQB7_5c0hjYZ17Ge54sT5nH2lPux8B2UMAs77Mi10tEd5l7uQ5YaHh-vT10UsCIk5fAurIDr2bsjgsZgRe4tJ2Ge6NsMxGJqBUHDWFxQxIbheeNFh4_IgvEQ3A"
+          );
+
+          var requestOptions = {
+            method: "GET",
+            headers: myHeaders,
+            redirect: "follow",
+          };
+
+          let resp = await (
+            await fetch(
+              "http://localhost:8000/api/v1/users/webauthn/challenge",
+              requestOptions
+            )
+          ).json();
+
+          attResp = await startAttestation(resp.data);
+
+          const verificationResp = await fetch(
+            "http://localhost:8000/api/v1/users/webauthn?name=test",
+            {
+              method: "POST",
+              headers: {
+                Authorization:
+                  "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQwN2IwM2EzLTVkODUtNGZmZi1hYmY0LWE4YmMzMDNiOWFhNCIsImVtYWlsIjoibmF2ZWVuQGRvdHdvcmxkLmluIiwiaWF0IjoxNjIzNjMxNzY2LCJleHAiOjE2MjM4OTA5NjZ9.uipzZdna4OSHB-XeUizz2Kkc7ZT5ll5hVHZmCMaKinsYGJ1-h8mzAF2zjgQxRusT29QWw8PeLBw4b9RBULgJmPbD6IOpGHpRWXwrtXmxR8mS0h5JGcSMRj5PAqGK9x5LDVVjWG-uXCrlDkhrLbjjTcHmMwxHrYu9EuclPYrOGaPfSVC_NH0fYh75eD9AIBwQY-jX23Dkyv67nJn_wR5P5gPrufwavQB7_5c0hjYZ17Ge54sT5nH2lPux8B2UMAs77Mi10tEd5l7uQ5YaHh-vT10UsCIk5fAurIDr2bsjgsZgRe4tJ2Ge6NsMxGJqBUHDWFxQxIbheeNFh4_IgvEQ3A",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(attResp),
+            }
+          );
+
+          // Wait for the results of verification
+          const verificationJSON = await verificationResp.json();
+          console.log(verificationJSON);
+        } catch (error) {
+          // Some basic error handling
+          if (error.name === "InvalidStateError") {
+            console.log(
+              "Error: Authenticator was probably already registered by user"
+            );
+          }
+          console.error(error);
+          throw error;
+        }
+      }
+
+      async function validate() {
+        try {
+          const { startAssertion } = SimpleWebAuthnBrowser;
+
+          let email = document.querySelector("#email").value;
+          if (!email) throw new Error("Please enter email");
+
+          let resp = await (
+            await fetch(
+              "http://localhost:8000/api/v1/auth/webauthn/challenge?email=" +
+                email,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+          ).json();
+          let asseResp;
+          try {
+            asseResp = await startAssertion(resp.data);
+          } catch (error) {
+            throw error;
+          }
+
+          const verificationResp = await fetch(
+            "http://localhost:8000/api/v1/auth/webauthn",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: email,
+                data: asseResp,
+              }),
+            }
+          );
+
+          // Wait for the results of verification
+          const verificationJSON = await verificationResp.json();
+          console.log(verificationJSON);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    </script>
+  </body>
+</html>
