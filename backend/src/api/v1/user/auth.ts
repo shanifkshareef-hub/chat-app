@@ -38,7 +38,7 @@ export default (app: Router) => {
 
   route.post(
     "/register",
-    middlewares.validation.loginSchema,
+    middlewares.validation.RegisterSchema,
     async (req: Request, res: Response, next: NextFunction) => {
       const logger: Logger = Container.get("logger");
       logger.debug("Calling Sign-Up endpoint with body: %o", req.body);

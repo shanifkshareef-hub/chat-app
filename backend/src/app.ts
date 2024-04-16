@@ -3,9 +3,9 @@ import "reflect-metadata";
 import express from "express";
 import config from "./config";
 import Logger from "./loaders/logger";
-// import WebSocket from "ws";
 import http from "http";
 import { Server } from "socket.io";
+import { verifyToken } from "./helpers";
 
 let app = express();
 
@@ -13,23 +13,29 @@ let app = express();
   await require("./loaders").default(app);
 
   const server = http.createServer(app);
-  const io = new Server(server);
+
+  const io = new Server(server, {
+    cors: {
+      origin: "*",
+    },
+  });
 
   io.on("connection", (socket) => {
     console.log("socket is ready for connection", socket.id);
 
-    console.log("token");
+    const query = socket.handshake.query;
 
-    const token = socket.handshake.headers.token;
-
-    if (!token) {
-      socket.disconnect();
+    const payload = verifyToken(query.token as string);
+    if (!payload) {
+      console.log("Invalid token");
+      return socket.disconnect();
     }
+    const { id, userName } = payload;
 
     socket.on("chat message", (msg) => {
       console.log("chat", msg);
 
-      io.emit("chat message", msg);
+      io.emit("chat message", { userName, id, message: msg.message });
     });
   });
 
@@ -41,27 +47,6 @@ let app = express();
       Logger.error(err);
       process.exit(1);
     });
-
-  // // Create HTTP server by passing the Express app
-  // // const server = http.createServer(app);
-
-  // // Integrate WebSocket with the HTTP server
-  // const wss = new WebSocket.Server({ port: 8181 });
-
-  // // const wss = new WebSocket.Server({ server });
-
-  // wss.on("connection", function connection(ws) {
-  //   console.log("WS connection arrived");
-
-  //   ws.on("message", function incoming(message) {
-  //     console.log("received: %s", message);
-  //     // Echo the message back to the client
-  //     ws.send(`Echo: ${message}`);
-  //   });
-
-  //   // Send a welcome message on new connection
-  //   ws.send("Welcome to the chat!");
-  // });
 
   process.on("unhandledRejection", function (reason, p) {
     Logger.warn(

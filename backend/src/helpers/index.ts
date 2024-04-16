@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 import config from "../config";
 import { User } from "@prisma/client";
+import { TokenPayload } from "../interface/User";
 
 const makeid = (length: number): string => {
   let result: string[] = [];
@@ -42,12 +43,26 @@ function formatBytes(bytes, decimals = 2) {
 function generateLoginToken(user: User): string {
   var privateKey = config.keys.private.replace(/\\n/gm, "\n");
 
-  var token = jwt.sign({ id: user.id, email: user.email }, privateKey, {
-    expiresIn: "3d",
-    algorithm: "RS256",
-  });
+  var token = jwt.sign(
+    { id: user.id, email: user.email, userName: user.userName },
+    privateKey,
+    {
+      expiresIn: "3d",
+      algorithm: "RS256",
+    }
+  );
   return token;
 }
+
+export const verifyToken = (token: string) => {
+  var key = config.keys.public.replace(/\\n/gm, "\n");
+
+  try {
+    return jwt.verify(token, key) as TokenPayload;
+  } catch (error) {
+    return false;
+  }
+};
 
 export default {
   makeid,
