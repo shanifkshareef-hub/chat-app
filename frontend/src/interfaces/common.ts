@@ -21,3 +21,14 @@ export interface RegisterData {
   email: string;
   password: string;
 }
+export interface MessageData {
+  id: string;
+  userName: string;
+  message: string;
+}
+
+export interface IPayload {
+  id: string;
+  email: string;
+  userName: string;
+}

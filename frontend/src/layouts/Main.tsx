@@ -31,7 +31,7 @@ const Main = () => {
           }}
           className="pt-5"
           theme="light"
-          defaultSelectedKeys={["/app/dashboard"]}
+          defaultSelectedKeys={["/app/chat"]}
           mode="inline"
           items={menuItems}
         />

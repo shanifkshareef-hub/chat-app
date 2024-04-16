@@ -1,5 +1,6 @@
 import { notification } from "antd";
 import { KJUR } from "jsrsasign";
+import { IPayload } from "src/interfaces/common";
 
 export const clearToken = () => {
   localStorage.clear();
@@ -23,4 +24,13 @@ export function isAuthenticated(): boolean {
     return false;
   }
   return true;
+}
+
+export function decodePayload(): IPayload | null {
+  const token = window.localStorage.getItem("token");
+
+  if (!token) return null;
+
+  const payload = KJUR.jws.JWS.parse(token).payloadObj;
+  return payload as IPayload;
 }

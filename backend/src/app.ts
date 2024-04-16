@@ -28,6 +28,7 @@ let app = express();
     const payload = verifyToken(query.token as string);
     if (!payload) {
       console.log("Invalid token");
+      socket.emit("unauthorized");
       return socket.disconnect();
     }
     const { id, userName } = payload;
