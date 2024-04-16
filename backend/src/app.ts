@@ -34,8 +34,6 @@ let app = express();
     const { id, userName } = payload;
 
     socket.on("chat message", (msg) => {
-      console.log("chat", msg);
-
       io.emit("chat message", { userName, id, message: msg.message });
     });
   });
